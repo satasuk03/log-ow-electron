@@ -64,9 +64,9 @@ const logGetInfo = async (id) => {
   const info = await app.overwolf.packages.gep.getInfo(id);
   console.log(`[gepGetInfo] info: ${JSON.stringify(info)}`);
 
-  setTimeout(async () => {
-    logGetInfo(id);
-  }, 5000);
+  // setTimeout(async () => {
+  //   logGetInfo(id);
+  // }, 5000);
 };
 
 const setRequiredFeatures = async (id) => {
