@@ -14,14 +14,16 @@ const formatLogMessage = (args) =>
 
 const originalLog = console.log;
 console.log = (...args) => {
-  const message = formatLogMessage(args);
+  const time = new Date().toLocaleString();
+  const message = `[${time}] ${formatLogMessage(args)}`;
   originalLog.apply(console, args);
   logFileStream.write(message);
 };
 
 const originalError = console.error;
 console.error = (...args) => {
-  const message = formatLogMessage(args);
+  const time = new Date().toLocaleString();
+  const message = `[${time}] ${formatLogMessage(args)}`;
   originalError.apply(console, args);
   logFileStream.write(message);
 };
