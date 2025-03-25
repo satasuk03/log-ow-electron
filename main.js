@@ -38,21 +38,22 @@ process.on('unhandledRejection', (reason, promise) => {
 
 let mainWindow;
 
-app.on('ready', function () {
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-  });
+// app.on('ready', function () {
+//   console.log('app pid', process.pid);
+//   mainWindow = new BrowserWindow({
+//     width: 800,
+//     height: 600,
+//     webPreferences: {
+//       nodeIntegration: true,
+//     },
+//   });
 
-  mainWindow.loadFile('index.html');
+//   mainWindow.loadFile('index.html');
 
-  mainWindow.on('closed', function () {
-    mainWindow = null;
-  });
-});
+//   mainWindow.on('closed', function () {
+//     mainWindow = null;
+//   });
+// });
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
@@ -82,7 +83,7 @@ const setRequiredFeatures = async (id) => {
   const res = await app.overwolf.packages.gep.setRequiredFeatures(id, features);
   console.log(`app.overwolf.packages.gep.setRequiredFeatures(${id}, ${features}) done (${res})`);
 
-  logGetInfo(id)
+  logGetInfo(id);
 };
 
 let gameFilter;
@@ -262,5 +263,44 @@ app.whenReady().then(() => {
   const appID = process.env.OVERWOLF_APP_UID;
   console.log(`AppID: ${appID}`);
   console.log(`Chromium version: ${process.versions.chrome}`);
+  console.log(`Process ID: ${process.pid}`);
+
+  // Function to log system metrics
+  const logSystemMetrics = () => {
+    const formatBytes = (bytes) => {
+      return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    };
+
+    // Memory metrics
+    const memoryUsage = process.memoryUsage();
+    console.log('Memory Usage:', {
+      rss: formatBytes(memoryUsage.rss), // Resident Set Size
+      heapTotal: formatBytes(memoryUsage.heapTotal),
+      heapUsed: formatBytes(memoryUsage.heapUsed),
+      external: formatBytes(memoryUsage.external),
+    });
+
+    // CPU metrics
+    const cpuUsage = process.cpuUsage();
+    console.log('CPU Usage:', {
+      user: `${(cpuUsage.user / 1000000).toFixed(2)}s`, // Convert to seconds
+      system: `${(cpuUsage.system / 1000000).toFixed(2)}s`,
+    });
+
+    // System memory info
+    const totalMem = os.totalmem();
+    const freeMem = os.freemem();
+    console.log('System Memory:', {
+      total: formatBytes(totalMem),
+      free: formatBytes(freeMem),
+      used: formatBytes(totalMem - freeMem),
+    });
+  };
+
+  // Log metrics every 30 seconds
+  setInterval(logSystemMetrics, 30000);
+  // Log initial metrics
+  logSystemMetrics();
+
   setupOverwolf();
 });
